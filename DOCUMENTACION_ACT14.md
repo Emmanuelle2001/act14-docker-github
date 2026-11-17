@@ -1,4 +1,4 @@
-# ACTIVIDAD 14: DOCKER IMAGE EN GITHUB (GHCR)
+# ACTIVIDAD 14: DOCKER IMAGEN EN GITHUB (GHCR)
 
 **Asignatura:** Gestión del Proceso de Desarrollo de Software  
 **Alumno:** Emmanuelle Hernández Oropeza  
