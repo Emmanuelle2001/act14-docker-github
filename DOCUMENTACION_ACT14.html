@@ -78,19 +78,21 @@
             background-color: transparent;
             padding: 0;
         }
-        .img-box {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #fbfbfb;
-            border: 1px dashed #cccccc;
-            border-radius: 6px;
+        .imagen-contenedor {
+            margin: 25px 0;
             text-align: center;
         }
-        .img-box p {
-            text-align: center;
+        .imagen-contenedor img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+        }
+        .pie-imagen {
             font-size: 13px;
-            color: #666666;
-            margin: 5px 0 0 0;
+            color: #555555;
+            margin-top: 8px;
             font-style: italic;
         }
         .badge {
@@ -117,29 +119,33 @@
 
     <h2>1. Introducción y Objetivos</h2>
     <p>
-        El objetivo de esta práctica es implementar un flujo de trabajo automatizado de <strong>Integración Continua y Despliegue Continuo (CI/CD)</strong> empleando <strong>GitHub Actions</strong> y el registro de contenedores <strong>GitHub Container Registry (GHCR)</strong>. 
+        El objetivo de esta práctica es implementar un ciclo de vida completo de <strong>Integración Continua y Despliegue Continuo (CI/CD)</strong> utilizando <strong>GitHub Actions</strong> y el registro de contenedores <strong>GitHub Container Registry (GHCR)</strong>. 
     </p>
     <p>
-        A través de este flujo, cada cambio en el repositorio ejecuta pruebas unitarias automatizadas con <code>pytest</code> y, si son superadas satisfactoriamente, compila una imagen Docker optimizada de una API FastAPI y la publica en <code>ghcr.io</code> para su posterior descarga y ejecución en local.
+        A través de este flujo automatizado, se valida el código fuente mediante pruebas unitarias automáticas con <code>pytest</code> y, tras su aprobación exitosa, se compila una imagen Docker optimizada de una API desarrollada en Python con FastAPI, publicándola en <code>ghcr.io</code> para su posterior descarga (<code>pull</code>) y ejecución (<code>run</code>) en un entorno local.
     </p>
 
     <h2>2. Solución a los Desafíos Propuestos</h2>
 
     <h3>2.1. Comandos en Consola Ordenados Cronológicamente</h3>
-    <p>Los comandos originalmente provistos de forma desordenada corresponden al siguiente orden de ejecución:</p>
-    <pre><code># 1. Instalar requerimientos base de la API
+    <p>Los comandos originalmente provistos de forma desordenada corresponden al siguiente orden de ejecución técnica:</p>
+    <pre><code># ==========================================
+# FASE 1: PREPARACIÓN LOCAL Y REPOSITORIO GIT
+# ==========================================
+
+# 1. Instalar requerimientos base de la API
 python -m pip install -r requirements.txt
 
 # 2. Instalar dependencias de desarrollo y testing (pytest, httpx)
 python -m pip install -r requirements-dev.txt
 
-# 3. Validar pruebas unitarias en local
+# 3. Validar pruebas unitarias en local antes de publicar
 python -m pytest -v
 
 # 4. Inicializar repositorio Git local
 git init
 
-# 5. Configurar identidad de Git
+# 5. Configurar identidad local en el repositorio
 git config --local user.name "Emmanuelle2001"
 git config --local user.email "emmanuelle.hernandez2001@gmail.com"
 
@@ -150,6 +156,10 @@ git branch -M main
 git remote add origin https://github.com/Emmanuelle2001/act14-docker-github.git
 git push -u origin main
 
+# ==========================================
+# FASE 2: DESCARGA Y EJECUCIÓN CON DOCKER
+# ==========================================
+
 # 7. Descargar la imagen generada en GitHub Container Registry
 docker pull ghcr.io/emmanuelle2001/act14-docker-github:latest
 
@@ -158,11 +168,11 @@ docker run -d --name api-act14 -p 8000:8000 ghcr.io/emmanuelle2001/act14-docker-
 
     <h3>2.2. Corrección y Estructuración de los Steps en el Workflow YAML</h3>
     <p>
-        Los steps del archivo <code>.yml</code> se encontraban en una lista plana con errores de secuenciación y permisos. Se corrigieron separándolos en dos jobs:
+        Los steps del archivo <code>.yml</code> se encontraban en una lista plana con errores de secuenciación y permisos. Se corrigieron separándolos en dos jobs dependientes:
     </p>
     <ul>
-        <li><strong>Job <code>test</code>:</strong> Valida el código con Python 3.12, instalando <code>requirements-dev.txt</code> y ejecutando <code>pytest</code>.</li>
-        <li><strong>Job <code>imagen</code>:</strong> Depende de <code>test</code> (<code>needs: test</code>), declara permisos de escritura de paquetes (<code>permissions: packages: write</code>), convierte el nombre del repositorio a minúsculas, configura Docker Buildx, autentica contra GHCR y publica la imagen.</li>
+        <li><strong>Job <code>test</code>:</strong> Valida el código con Python 3.12, instalando <code>requirements-dev.txt</code> y ejecutando <code>pytest -v</code>.</li>
+        <li><strong>Job <code>imagen</code>:</strong> Depende de que las pruebas pasen (<code>needs: test</code>), declara permisos explícitos de escritura de paquetes (<code>permissions: packages: write</code>), convierte el nombre del repositorio a minúsculas, configura Docker Buildx, inicia sesión en GHCR y compila/publica la imagen.</li>
     </ul>
 
     <h2>3. Estructura de Archivos del Proyecto</h2>
@@ -172,43 +182,54 @@ docker run -d --name api-act14 -p 8000:8000 ghcr.io/emmanuelle2001/act14-docker-
 │       └── docker-image.yml     # Workflow de CI/CD para GitHub Actions
 ├── .dockerignore                 # Archivos excluidos de la imagen Docker
 ├── .gitignore                    # Archivos excluidos del control de versiones Git
-├── app.py                        # API REST en FastAPI
-├── test_app.py                   # Pruebas unitarias con Pytest
-├── requirements.txt              # Dependencias de producción para la imagen
-├── requirements-dev.txt          # Dependencias de testing y desarrollo
-├── Dockerfile                    # Definición de contenedor ligero Python
-└── README.md                     # Documentación técnica del repositorio</code></pre>
+├── app.py                        # API REST desarrollada con FastAPI
+├── test_app.py                   # Pruebas unitarias directas e HTTP con Pytest
+├── requirements.txt              # Requerimientos base para la imagen Docker
+├── requirements-dev.txt          # Requerimientos de pruebas y desarrollo
+├── Dockerfile                    # Definición de contenedor ligero Python (python:3.10-slim)
+├── README.md                     # Documentación técnica del proyecto
+└── img/                          # Capturas de evidencia de ejecución</code></pre>
 
     <h2>4. Evidencias de Ejecución</h2>
 
-    <h3>4.1. Pruebas Unitarias Locales (Pytest)</h3>
-    <div class="img-box">
-        <p>[ Pegar aquí captura de pantalla de la terminal ejecutando: python -m pytest -v ]</p>
+    <h3>4.1. Pruebas Unitarias Locales con Pytest</h3>
+    <p>Se ejecutó <code>python -m pytest -v</code> validando que las pruebas unitarias pasaran satisfactoriamente antes de publicar los cambios:</p>
+    <div class="imagen-contenedor">
+        <img src="img/01_pruebas_unitarias_pytest.jpg" alt="Pruebas unitarias locales ejecutadas con pytest">
+        <div class="pie-imagen">Figura 1. Validación de pruebas unitarias locales con Pytest (6 passed).</div>
     </div>
 
-    <h3>4.2. Ejecución de Jobs en GitHub Actions</h3>
-    <div class="img-box">
-        <p>[ Pegar aquí captura de pantalla de la pestaña Actions de GitHub con los jobs en verde ]</p>
+    <h3>4.2. Ejecución Automatizada en GitHub Actions</h3>
+    <p>Al hacer <code>push</code> a la rama <code>main</code>, GitHub Actions activó el flujo de trabajo ejecutando exitosamente el job de pruebas y el job de generación de imagen Docker en GHCR:</p>
+    <div class="imagen-contenedor">
+        <img src="img/02_github_actions_exitoso.jpg" alt="Ejecución exitosa de jobs en GitHub Actions">
+        <div class="pie-imagen">Figura 2. Pipeline completado con éxito en GitHub Actions (Jobs de Pruebas y Construcción/Publicación en GHCR).</div>
     </div>
 
-    <h3>4.3. Paquete Publicado en GHCR (GitHub Packages)</h3>
-    <div class="img-box">
-        <p>[ Pegar aquí captura de la pestaña Packages mostrando act14-docker-github ]</p>
+    <h3>4.3. Descarga y Ejecución con Docker en la Terminal</h3>
+    <p>Se realizó la descarga de la imagen generada directamente desde <code>ghcr.io</code> con <code>docker pull</code> y su posterior ejecución en segundo plano con <code>docker run</code> en el puerto 8000:</p>
+    <div class="imagen-contenedor">
+        <img src="img/03_docker_pull_y_run.jpg" alt="Descarga y ejecución de imagen con Docker">
+        <div class="pie-imagen">Figura 3. Descarga (docker pull) y ejecución en segundo plano (docker run) de la imagen desde GHCR.</div>
     </div>
 
-    <h3>4.4. Descarga y Ejecución con Docker Local</h3>
-    <div class="img-box">
-        <p>[ Pegar aquí captura de terminal con 'docker pull' y 'docker run' ]</p>
+    <h3>4.4. Verificación del Contenedor Activo en Docker Desktop</h3>
+    <p>Se corroboró en el panel de control de Docker Desktop que el contenedor <code>api-act14</code> se encuentra en estado activo (<em>Running</em>) en el puerto asignado 8000:</p>
+    <div class="imagen-contenedor">
+        <img src="img/04_docker_desktop_activo.jpg" alt="Contenedor activo en Docker Desktop">
+        <div class="pie-imagen">Figura 4. Panel de Docker Desktop mostrando el contenedor api-act14 activo.</div>
     </div>
 
     <h3>4.5. Validación de la API en el Navegador</h3>
-    <div class="img-box">
-        <p>[ Pegar aquí captura del navegador en http://localhost:8000/ y http://localhost:8000/docs ]</p>
+    <p>Se consultó el endpoint raíz <code>http://localhost:8000</code> en el navegador web, obteniendo la respuesta en formato JSON con el hostname correspondiente al contenedor activo:</p>
+    <div class="imagen-contenedor">
+        <img src="img/05_api_funcionando_navegador.png" alt="Respuesta de la API en el navegador">
+        <div class="pie-imagen">Figura 5. Verificación de funcionamiento de la API respondiendo desde el contenedor en localhost:8000.</div>
     </div>
 
     <h2>5. Conclusión</h2>
     <p>
-        La implementación del pipeline permitió validar de manera práctica cómo las prácticas modernas de DevOps integran la calidad del código y la automatización del despliegue. El desacoplamiento de dependencias de desarrollo y producción optimiza el rendimiento y tamaño de los contenedores, mientras que la integración entre GitHub Actions y GHCR proporciona un ciclo de vida transparente, rastreable y seguro.
+        La práctica permitió integrar de forma exitosa los conceptos de control de versiones con Git, automatización de pruebas y publicación de artefactos en la nube mediante GitHub Actions y GHCR. La separación de requerimientos optimizó el tamaño de la imagen final generada, y la estructura modular de jobs garantiza que solo se publiquen versiones que hayan superado las pruebas de calidad de forma rigurosa.
     </p>
 
 </body>

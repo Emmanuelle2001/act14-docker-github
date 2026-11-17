@@ -46,8 +46,6 @@ git config --local user.email "emmanuelle.hernandez2001@gmail.com"
 
 # 6. Agregar todos los archivos al área de preparación (staging)
 git add .
-
-# (Posteriormente se realiza el commit y push al repositorio de GitHub)
 git commit -m "feat: implementacion inicial de API, tests y workflow CI/CD"
 git branch -M main
 git remote add origin https://github.com/Emmanuelle2001/act14-docker-github.git
@@ -230,7 +228,6 @@ def test_health_check_unit():
   ```
 
 ### 3.4. Dockerfile y .dockerignore
-El archivo `Dockerfile` utiliza una imagen base `python:3.10-slim` e instala únicamente las dependencias de producción, manteniendo la imagen pequeña y segura:
 ```dockerfile
 FROM python:3.10-slim
 
@@ -250,41 +247,43 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 
 ## 4. Evidencias de Ejecución
 
-### 4.1. Ejecución de Pruebas Unitarias Locales con Pytest
-```text
-============================= test session starts =============================
-platform win32 -- Python 3.10.11, pytest-9.2.0, pluggy-1.7.0
-rootdir: C:\Users\bearo\Documents\Proyectos\act14-docker-github
-collected 3 items
+### 4.1. Pruebas Unitarias Locales con Pytest
+Se validaron las pruebas unitarias localmente con `python -m pytest -v`:
 
-test_app.py::test_read_root_unit PASSED                                  [ 33%]
-test_app.py::test_saludar_unit PASSED                                    [ 66%]
-test_app.py::test_health_check_unit PASSED                               [100%]
-
-============================== 3 passed in 0.44s ==============================
-```
-
-*(Insertar captura de pantalla de la terminal con las pruebas en verde)*
+![Pruebas Unitarias con Pytest](img/01_pruebas_unitarias_pytest.jpg)
+*Figura 1. Validación de pruebas unitarias locales con Pytest (6 passed).*
 
 ---
 
 ### 4.2. Ejecución Exitosa en GitHub Actions
-*(Insertar captura de pantalla de la pestaña Actions en GitHub mostrando ambos jobs "Pruebas Unitarias" y "Construir y Publicar Imagen en GHCR" completados con check verde)*
+Los dos jobs (`Pruebas Unitarias` y `Construir y Publicar Imagen en GHCR`) se ejecutaron y completaron en verde:
+
+![GitHub Actions Exitoso](img/02_github_actions_exitoso.jpg)
+*Figura 2. Pipeline completado con éxito en GitHub Actions.*
 
 ---
 
-### 4.3. Paquete Publicado en GitHub Container Registry (GHCR)
-*(Insertar captura de pantalla de la pestaña "Packages" en el perfil o repositorio de GitHub)*
+### 4.3. Descarga (`docker pull`) y Ejecución (`docker run`) en Local
+Descarga de la imagen de GHCR y ejecución del contenedor en el puerto 8000:
+
+![Docker Pull y Run](img/03_docker_pull_y_run.jpg)
+*Figura 3. Descarga (docker pull) y arranque (docker run) de la imagen desde GHCR.*
 
 ---
 
-### 4.4. Descarga (`docker pull`) y Ejecución (`docker run`) en Local
-*(Insertar captura de pantalla de PowerShell ejecutando los comandos `docker pull` y `docker run -d -p 8000:8000`)*
+### 4.4. Contenedor Activo en Docker Desktop
+Verificación en Docker Desktop con el contenedor `api-act14` en ejecución:
+
+![Contenedor Activo en Docker Desktop](img/04_docker_desktop_activo.jpg)
+*Figura 4. Panel de Docker Desktop mostrando el contenedor api-act14 activo.*
 
 ---
 
 ### 4.5. Validación de la API en el Navegador
-*(Insertar capturas de pantalla de la respuesta JSON en `http://localhost:8000/` y la documentación interactiva en `http://localhost:8000/docs`)*
+Comprobación de respuesta HTTP en `http://localhost:8000`:
+
+![API funcionando en localhost:8000](img/05_api_funcionando_navegador.png)
+*Figura 5. Verificación de funcionamiento de la API respondiendo desde el contenedor en localhost:8000.*
 
 ---
 
