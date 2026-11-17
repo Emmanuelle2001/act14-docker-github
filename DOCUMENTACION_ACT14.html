@@ -175,22 +175,7 @@ docker run -d --name api-act14 -p 8000:8000 ghcr.io/emmanuelle2001/act14-docker-
         <li><strong>Job <code>imagen</code>:</strong> Depende de que las pruebas pasen (<code>needs: test</code>), declara permisos explícitos de escritura de paquetes (<code>permissions: packages: write</code>), convierte el nombre del repositorio a minúsculas, configura Docker Buildx, inicia sesión en GHCR y compila/publica la imagen.</li>
     </ul>
 
-    <h2>3. Estructura de Archivos del Proyecto</h2>
-    <pre><code>act14-docker-github/
-├── .github/
-│   └── workflows/
-│       └── docker-image.yml     # Workflow de CI/CD para GitHub Actions
-├── .dockerignore                 # Archivos excluidos de la imagen Docker
-├── .gitignore                    # Archivos excluidos del control de versiones Git
-├── app.py                        # API REST desarrollada con FastAPI
-├── test_app.py                   # Pruebas unitarias directas e HTTP con Pytest
-├── requirements.txt              # Requerimientos base para la imagen Docker
-├── requirements-dev.txt          # Requerimientos de pruebas y desarrollo
-├── Dockerfile                    # Definición de contenedor ligero Python (python:3.10-slim)
-├── README.md                     # Documentación técnica del proyecto
-└── img/                          # Capturas de evidencia de ejecución</code></pre>
-
-    <h2>4. Evidencias de Ejecución</h2>
+    <h2>3. Evidencias de Ejecución</h2>
 
     <h3>4.1. Pruebas Unitarias Locales con Pytest</h3>
     <p>Se ejecutó <code>python -m pytest -v</code> validando que las pruebas unitarias pasaran satisfactoriamente antes de publicar los cambios:</p>
@@ -227,7 +212,7 @@ docker run -d --name api-act14 -p 8000:8000 ghcr.io/emmanuelle2001/act14-docker-
         <div class="pie-imagen">Figura 5. Verificación de funcionamiento de la API respondiendo desde el contenedor en localhost:8000.</div>
     </div>
 
-    <h2>5. Conclusión</h2>
+    <h2>4. Conclusión</h2>
     <p>
         La práctica permitió integrar de forma exitosa los conceptos de control de versiones con Git, automatización de pruebas y publicación de artefactos en la nube mediante GitHub Actions y GHCR. La separación de requerimientos optimizó el tamaño de la imagen final generada, y la estructura modular de jobs garantiza que solo se publiquen versiones que hayan superado las pruebas de calidad de forma rigurosa.
     </p>
