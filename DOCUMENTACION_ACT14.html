@@ -177,35 +177,35 @@ docker run -d --name api-act14 -p 8000:8000 ghcr.io/emmanuelle2001/act14-docker-
 
     <h2>3. Evidencias de Ejecución</h2>
 
-    <h3>4.1. Pruebas Unitarias Locales con Pytest</h3>
+    <h3>3.1. Pruebas Unitarias Locales con Pytest</h3>
     <p>Se ejecutó <code>python -m pytest -v</code> validando que las pruebas unitarias pasaran satisfactoriamente antes de publicar los cambios:</p>
     <div class="imagen-contenedor">
         <img src="img/01_pruebas_unitarias_pytest.jpg" alt="Pruebas unitarias locales ejecutadas con pytest">
         <div class="pie-imagen">Figura 1. Validación de pruebas unitarias locales con Pytest (6 passed).</div>
     </div>
 
-    <h3>4.2. Ejecución Automatizada en GitHub Actions</h3>
+    <h3>3.2. Ejecución Automatizada en GitHub Actions</h3>
     <p>Al hacer <code>push</code> a la rama <code>main</code>, GitHub Actions activó el flujo de trabajo ejecutando exitosamente el job de pruebas y el job de generación de imagen Docker en GHCR:</p>
     <div class="imagen-contenedor">
         <img src="img/02_github_actions_exitoso.jpg" alt="Ejecución exitosa de jobs en GitHub Actions">
         <div class="pie-imagen">Figura 2. Pipeline completado con éxito en GitHub Actions (Jobs de Pruebas y Construcción/Publicación en GHCR).</div>
     </div>
 
-    <h3>4.3. Descarga y Ejecución con Docker en la Terminal</h3>
+    <h3>3.3. Descarga y Ejecución con Docker en la Terminal</h3>
     <p>Se realizó la descarga de la imagen generada directamente desde <code>ghcr.io</code> con <code>docker pull</code> y su posterior ejecución en segundo plano con <code>docker run</code> en el puerto 8000:</p>
     <div class="imagen-contenedor">
         <img src="img/03_docker_pull_y_run.jpg" alt="Descarga y ejecución de imagen con Docker">
         <div class="pie-imagen">Figura 3. Descarga (docker pull) y ejecución en segundo plano (docker run) de la imagen desde GHCR.</div>
     </div>
 
-    <h3>4.4. Verificación del Contenedor Activo en Docker Desktop</h3>
+    <h3>3.4. Verificación del Contenedor Activo en Docker Desktop</h3>
     <p>Se corroboró en el panel de control de Docker Desktop que el contenedor <code>api-act14</code> se encuentra en estado activo (<em>Running</em>) en el puerto asignado 8000:</p>
     <div class="imagen-contenedor">
         <img src="img/04_docker_desktop_activo.jpg" alt="Contenedor activo en Docker Desktop">
         <div class="pie-imagen">Figura 4. Panel de Docker Desktop mostrando el contenedor api-act14 activo.</div>
     </div>
 
-    <h3>4.5. Validación de la API en el Navegador</h3>
+    <h3>3.5. Validación de la API en el Navegador</h3>
     <p>Se consultó el endpoint raíz <code>http://localhost:8000</code> en el navegador web, obteniendo la respuesta en formato JSON con el hostname correspondiente al contenedor activo:</p>
     <div class="imagen-contenedor">
         <img src="img/05_api_funcionando_navegador.png" alt="Respuesta de la API en el navegador">
