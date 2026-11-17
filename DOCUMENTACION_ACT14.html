@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad 14 - Docker Image en GitHub | Emmanuelle Hernández Oropeza</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+            color: #222222;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #ffffff;
+        }
+        .header {
+            border-bottom: 2px solid #333333;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            font-size: 24px;
+            margin: 0 0 15px 0;
+            color: #111111;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .datos {
+            font-size: 15px;
+            line-height: 1.7;
+        }
+        .datos strong {
+            color: #111111;
+        }
+        h2 {
+            font-size: 18px;
+            color: #0b4c8c;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 5px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            font-size: 16px;
+            color: #333333;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        p, li {
+            font-size: 14.5px;
+            text-align: justify;
+        }
+        ul, ol {
+            padding-left: 25px;
+        }
+        li {
+            margin-bottom: 6px;
+        }
+        pre {
+            background-color: #f6f8fa;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            padding: 14px;
+            overflow-x: auto;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+        code {
+            font-family: "Consolas", "Courier New", monospace;
+            background-color: #eff1f3;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+        .img-box {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #fbfbfb;
+            border: 1px dashed #cccccc;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .img-box p {
+            text-align: center;
+            font-size: 13px;
+            color: #666666;
+            margin: 5px 0 0 0;
+            font-style: italic;
+        }
+        .badge {
+            display: inline-block;
+            background-color: #0969da;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>ACTIVIDAD 14: DOCKER IMAGE EN GITHUB (GHCR)</h1>
+        <div class="datos">
+            <strong>Asignatura:</strong> Gestión del Proceso de Desarrollo de Software<br>
+            <strong>Alumno:</strong> Emmanuelle Hernández Oropeza<br>
+            <strong>Fecha de Entrega:</strong> 17 de noviembre de 2026
+        </div>
+    </div>
+
+    <h2>1. Introducción y Objetivos</h2>
+    <p>
+        El objetivo de esta práctica es implementar un flujo de trabajo automatizado de <strong>Integración Continua y Despliegue Continuo (CI/CD)</strong> empleando <strong>GitHub Actions</strong> y el registro de contenedores <strong>GitHub Container Registry (GHCR)</strong>. 
+    </p>
+    <p>
+        A través de este flujo, cada cambio en el repositorio ejecuta pruebas unitarias automatizadas con <code>pytest</code> y, si son superadas satisfactoriamente, compila una imagen Docker optimizada de una API FastAPI y la publica en <code>ghcr.io</code> para su posterior descarga y ejecución en local.
+    </p>
+
+    <h2>2. Solución a los Desafíos Propuestos</h2>
+
+    <h3>2.1. Comandos en Consola Ordenados Cronológicamente</h3>
+    <p>Los comandos originalmente provistos de forma desordenada corresponden al siguiente orden de ejecución:</p>
+    <pre><code># 1. Instalar requerimientos base de la API
+python -m pip install -r requirements.txt
+
+# 2. Instalar dependencias de desarrollo y testing (pytest, httpx)
+python -m pip install -r requirements-dev.txt
+
+# 3. Validar pruebas unitarias en local
+python -m pytest -v
+
+# 4. Inicializar repositorio Git local
+git init
+
+# 5. Configurar identidad de Git
+git config --local user.name "Emmanuelle2001"
+git config --local user.email "emmanuelle.hernandez2001@gmail.com"
+
+# 6. Preparar y versionar archivos
+git add .
+git commit -m "feat: configuracion de API, tests y workflow de Docker en GHCR"
+git branch -M main
+git remote add origin https://github.com/Emmanuelle2001/act14-docker-github.git
+git push -u origin main
+
+# 7. Descargar la imagen generada en GitHub Container Registry
+docker pull ghcr.io/emmanuelle2001/act14-docker-github:latest
+
+# 8. Ejecutar la imagen descargada en un contenedor Docker local
+docker run -d --name api-act14 -p 8000:8000 ghcr.io/emmanuelle2001/act14-docker-github:latest</code></pre>
+
+    <h3>2.2. Corrección y Estructuración de los Steps en el Workflow YAML</h3>
+    <p>
+        Los steps del archivo <code>.yml</code> se encontraban en una lista plana con errores de secuenciación y permisos. Se corrigieron separándolos en dos jobs:
+    </p>
+    <ul>
+        <li><strong>Job <code>test</code>:</strong> Valida el código con Python 3.12, instalando <code>requirements-dev.txt</code> y ejecutando <code>pytest</code>.</li>
+        <li><strong>Job <code>imagen</code>:</strong> Depende de <code>test</code> (<code>needs: test</code>), declara permisos de escritura de paquetes (<code>permissions: packages: write</code>), convierte el nombre del repositorio a minúsculas, configura Docker Buildx, autentica contra GHCR y publica la imagen.</li>
+    </ul>
+
+    <h2>3. Estructura de Archivos del Proyecto</h2>
+    <pre><code>act14-docker-github/
+├── .github/
+│   └── workflows/
+│       └── docker-image.yml     # Workflow de CI/CD para GitHub Actions
+├── .dockerignore                 # Archivos excluidos de la imagen Docker
+├── .gitignore                    # Archivos excluidos del control de versiones Git
+├── app.py                        # API REST en FastAPI
+├── test_app.py                   # Pruebas unitarias con Pytest
+├── requirements.txt              # Dependencias de producción para la imagen
+├── requirements-dev.txt          # Dependencias de testing y desarrollo
+├── Dockerfile                    # Definición de contenedor ligero Python
+└── README.md                     # Documentación técnica del repositorio</code></pre>
+
+    <h2>4. Evidencias de Ejecución</h2>
+
+    <h3>4.1. Pruebas Unitarias Locales (Pytest)</h3>
+    <div class="img-box">
+        <p>[ Pegar aquí captura de pantalla de la terminal ejecutando: python -m pytest -v ]</p>
+    </div>
+
+    <h3>4.2. Ejecución de Jobs en GitHub Actions</h3>
+    <div class="img-box">
+        <p>[ Pegar aquí captura de pantalla de la pestaña Actions de GitHub con los jobs en verde ]</p>
+    </div>
+
+    <h3>4.3. Paquete Publicado en GHCR (GitHub Packages)</h3>
+    <div class="img-box">
+        <p>[ Pegar aquí captura de la pestaña Packages mostrando act14-docker-github ]</p>
+    </div>
+
+    <h3>4.4. Descarga y Ejecución con Docker Local</h3>
+    <div class="img-box">
+        <p>[ Pegar aquí captura de terminal con 'docker pull' y 'docker run' ]</p>
+    </div>
+
+    <h3>4.5. Validación de la API en el Navegador</h3>
+    <div class="img-box">
+        <p>[ Pegar aquí captura del navegador en http://localhost:8000/ y http://localhost:8000/docs ]</p>
+    </div>
+
+    <h2>5. Conclusión</h2>
+    <p>
+        La implementación del pipeline permitió validar de manera práctica cómo las prácticas modernas de DevOps integran la calidad del código y la automatización del despliegue. El desacoplamiento de dependencias de desarrollo y producción optimiza el rendimiento y tamaño de los contenedores, mientras que la integración entre GitHub Actions y GHCR proporciona un ciclo de vida transparente, rastreable y seguro.
+    </p>
+
+</body>
+</html>
