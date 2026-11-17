@@ -119,7 +119,7 @@
 
     <h2>1. Introducción y Objetivos</h2>
     <p>
-        El objetivo de esta práctica es implementar un ciclo de vida completo de <strong>Integración Continua y Despliegue Continuo (CI/CD)</strong> utilizando <strong>GitHub Actions</strong> y el registro de contenedores <strong>GitHub Container Registry (GHCR)</strong>. 
+        El objetivo de esta práctica es implementar un ciclo de vida completo de Integración Continua y Despliegue Continuo (CI/CD) utilizando GitHub Actions y el registro de contenedores GitHub Container Registry (GHCR). 
     </p>
     <p>
         A través de este flujo automatizado, se valida el código fuente mediante pruebas unitarias automáticas con <code>pytest</code> y, tras su aprobación exitosa, se compila una imagen Docker optimizada de una API desarrollada en Python con FastAPI, publicándola en <code>ghcr.io</code> para su posterior descarga (<code>pull</code>) y ejecución (<code>run</code>) en un entorno local.
@@ -171,8 +171,8 @@ docker run -d --name api-act14 -p 8000:8000 ghcr.io/emmanuelle2001/act14-docker-
         Los steps del archivo <code>.yml</code> se encontraban en una lista plana con errores de secuenciación y permisos. Se corrigieron separándolos en dos jobs dependientes:
     </p>
     <ul>
-        <li><strong>Job <code>test</code>:</strong> Valida el código con Python 3.12, instalando <code>requirements-dev.txt</code> y ejecutando <code>pytest -v</code>.</li>
-        <li><strong>Job <code>imagen</code>:</strong> Depende de que las pruebas pasen (<code>needs: test</code>), declara permisos explícitos de escritura de paquetes (<code>permissions: packages: write</code>), convierte el nombre del repositorio a minúsculas, configura Docker Buildx, inicia sesión en GHCR y compila/publica la imagen.</li>
+        <li>Job <code>test</code>: Valida el código con Python 3.12, instalando <code>requirements-dev.txt</code> y ejecutando <code>pytest -v</code>.</li>
+        <li>Job <code>imagen</code>: Depende de que las pruebas pasen (<code>needs: test</code>), declara permisos explícitos de escritura de paquetes (<code>permissions: packages: write</code>), convierte el nombre del repositorio a minúsculas, configura Docker Buildx, inicia sesión en GHCR y compila/publica la imagen.</li>
     </ul>
 
     <h2>3. Evidencias de Ejecución</h2>

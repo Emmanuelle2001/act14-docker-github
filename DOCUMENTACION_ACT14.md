@@ -7,7 +7,7 @@
 ---
 
 ## 1. Introducción y Objetivos
-El objetivo principal de esta práctica es implementar un ciclo completo de **Integración Continua y Despliegue Continuo (CI/CD)** utilizando **GitHub Actions** y **GitHub Container Registry (GHCR)** para compilar, probar, publicar y desplegar una imagen de contenedor Docker a partir de una API desarrollada en Python con FastAPI.
+El objetivo principal de esta práctica es implementar un ciclo completo de Integración Continua y Despliegue Continuo (CI/CD) utilizando GitHub Actions y GitHub Container Registry (GHCR) para compilar, probar, publicar y desplegar una imagen de contenedor Docker a partir de una API desarrollada en Python con FastAPI.
 
 A través de esta actividad se logra:
 - Modularizar dependencias entre entornos de desarrollo/pruebas y producción.
